@@ -7,6 +7,7 @@ export default function LocationDetailPage() {
   const decodedLocation = decodeURIComponent(location)
   const [boxes, setBoxes] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     fetchBoxes()
@@ -27,6 +28,22 @@ export default function LocationDetailPage() {
     }
     setBoxes(data)
     setLoading(false)
+  }
+
+  // 箱を削除する（物品が残っている場合はアラートを出して中断）
+  async function handleDeleteBox(box) {
+    if (box.items?.length > 0) {
+      window.alert(`「${box.name}」には物品が ${box.items.length} 件あります。\n物品をすべて削除してから、箱を削除してください。`)
+      return
+    }
+    if (!window.confirm(`「${box.name}」を削除しますか？`)) return
+
+    const { error } = await supabase.from('boxes').delete().eq('id', box.id)
+    if (error) {
+      setError(error.message)
+    } else {
+      setBoxes(prev => prev.filter(b => b.id !== box.id))
+    }
   }
 
   function formatDate(dateStr) {
@@ -53,6 +70,8 @@ export default function LocationDetailPage() {
         </Link>
       </div>
 
+      {error && <div className="message-error">{error}</div>}
+
       {boxes.length === 0 ? (
         <div className="empty-state">
           <p>この場所に箱がありません</p>
@@ -64,15 +83,27 @@ export default function LocationDetailPage() {
           </p>
           <div className="box-list">
             {boxes.map(box => (
-              <Link key={box.id} to={`/boxes/${box.id}`} className="box-item">
-                <div>
+              <div key={box.id} className="box-item">
+                {/* 箱名・メタ情報クリックで詳細へ */}
+                <Link
+                  to={`/boxes/${box.id}`}
+                  style={{ flex: 1, textDecoration: 'none', color: 'inherit' }}
+                >
                   <div className="box-item-name">{box.name}</div>
                   <div className="box-item-meta">
                     物品 {box.items?.length ?? 0} 件 ・ 登録日: {formatDate(box.created_at)}
                   </div>
+                </Link>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <span className="box-item-arrow">›</span>
+                  <button
+                    className="btn btn-danger btn-sm"
+                    onClick={() => handleDeleteBox(box)}
+                  >
+                    削除
+                  </button>
                 </div>
-                <span className="box-item-arrow">›</span>
-              </Link>
+              </div>
             ))}
           </div>
         </>

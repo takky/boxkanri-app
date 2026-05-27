@@ -19,6 +19,7 @@ create table if not exists items (
   box_id     uuid references boxes(id) on delete cascade not null,
   name       text not null,
   category   text not null check (category in ('本', '雑誌', '資料', 'CD', 'DVD')),
+  author     text,
   created_at timestamptz default now() not null
 );
 

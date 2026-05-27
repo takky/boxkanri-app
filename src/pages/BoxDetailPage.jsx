@@ -22,12 +22,14 @@ export default function BoxDetailPage() {
   const [showAddForm, setShowAddForm] = useState(false)
   const [newItemName, setNewItemName] = useState('')
   const [newItemCategory, setNewItemCategory] = useState(CATEGORIES[0])
+  const [newItemAuthor, setNewItemAuthor] = useState('')
   const [addingItem, setAddingItem] = useState(false)
 
   // 物品インライン編集
   const [editingItemId, setEditingItemId] = useState(null)
   const [editItemName, setEditItemName] = useState('')
   const [editItemCategory, setEditItemCategory] = useState(CATEGORIES[0])
+  const [editItemAuthor, setEditItemAuthor] = useState('')
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -107,7 +109,12 @@ export default function BoxDetailPage() {
 
     const { data, error } = await supabase
       .from('items')
-      .insert({ box_id: id, name: newItemName.trim(), category: newItemCategory })
+      .insert({
+        box_id: id,
+        name: newItemName.trim(),
+        category: newItemCategory,
+        author: newItemAuthor.trim() || null,
+      })
       .select('*')
       .single()
 
@@ -117,6 +124,7 @@ export default function BoxDetailPage() {
       setItems(prev => [...prev, data])
       setNewItemName('')
       setNewItemCategory(CATEGORIES[0])
+      setNewItemAuthor('')
       setShowAddForm(false)
     }
     setAddingItem(false)
@@ -127,6 +135,7 @@ export default function BoxDetailPage() {
     setEditingItemId(item.id)
     setEditItemName(item.name)
     setEditItemCategory(item.category)
+    setEditItemAuthor(item.author ?? '')
   }
 
   // 物品を保存
@@ -136,7 +145,11 @@ export default function BoxDetailPage() {
 
     const { data, error } = await supabase
       .from('items')
-      .update({ name: editItemName.trim(), category: editItemCategory })
+      .update({
+        name: editItemName.trim(),
+        category: editItemCategory,
+        author: editItemAuthor.trim() || null,
+      })
       .eq('id', itemId)
       .select('*')
       .single()
@@ -299,6 +312,15 @@ export default function BoxDetailPage() {
                   </select>
                 </div>
               </div>
+              <div className="form-group" style={{ marginTop: '12px' }}>
+                <label>作者・著者</label>
+                <input
+                  type="text"
+                  value={newItemAuthor}
+                  onChange={e => setNewItemAuthor(e.target.value)}
+                  placeholder="例: 山田 太郎"
+                />
+              </div>
               <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
                 <button
                   type="submit"
@@ -314,6 +336,7 @@ export default function BoxDetailPage() {
                     setShowAddForm(false)
                     setNewItemName('')
                     setNewItemCategory(CATEGORIES[0])
+                    setNewItemAuthor('')
                   }}
                 >
                   キャンセル
@@ -340,6 +363,7 @@ export default function BoxDetailPage() {
               <tr>
                 <th>物品名</th>
                 <th>カテゴリ</th>
+                <th>作者・著者</th>
                 <th>登録日</th>
                 <th></th>
               </tr>
@@ -369,6 +393,15 @@ export default function BoxDetailPage() {
                           ))}
                         </select>
                       </td>
+                      <td>
+                        <input
+                          className="inline-input"
+                          type="text"
+                          value={editItemAuthor}
+                          onChange={e => setEditItemAuthor(e.target.value)}
+                          placeholder="作者・著者"
+                        />
+                      </td>
                       <td style={{ fontSize: '0.82rem', color: '#94a3b8' }}>
                         {new Date(item.created_at).toLocaleDateString('ja-JP')}
                       </td>
@@ -394,6 +427,9 @@ export default function BoxDetailPage() {
                     <>
                       <td>{item.name}</td>
                       <td><span className="badge">{item.category}</span></td>
+                      <td style={{ fontSize: '0.9rem', color: '#475569' }}>
+                        {item.author ?? '—'}
+                      </td>
                       <td style={{ fontSize: '0.82rem', color: '#94a3b8' }}>
                         {new Date(item.created_at).toLocaleDateString('ja-JP')}
                       </td>
