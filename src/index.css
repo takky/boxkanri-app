@@ -272,19 +272,25 @@ body {
   font-size: 1rem;
 }
 
-/* ============ 戻るリンク ============ */
+/* ============ 戻るリンク（ボタン形式） ============ */
 .back-link {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
   color: #4f46e5;
   text-decoration: none;
-  font-size: 0.875rem;
-  margin-bottom: 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  padding: 10px 18px;
+  background: #ede9fe;
+  border-radius: 8px;
+  transition: background 0.15s;
 }
 
 .back-link:hover {
-  text-decoration: underline;
+  background: #ddd6fe;
+  text-decoration: none;
 }
 
 /* ============ 箱リスト ============ */
@@ -501,4 +507,84 @@ body {
 .action-buttons {
   display: flex;
   gap: 4px;
+}
+
+/* ============ レスポンシブ対応（モバイル） ============ */
+@media (max-width: 640px) {
+
+  /* ページヘッダーを縦積みにする */
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .page-header h1 {
+    font-size: 1.25rem;
+  }
+
+  /* 認証フォームのパディングを縮小する */
+  .auth-box {
+    padding: 28px 20px;
+  }
+
+  /* 物品追加フォームの入力欄を縦積みにする */
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .form-row .form-group {
+    flex: unset;
+    margin-bottom: 16px;
+  }
+
+  /* 物品テーブルをカード形式に変換する */
+  .items-table {
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  /* ヘッダー行を非表示にする（data-label で代替） */
+  .items-table thead {
+    display: none;
+  }
+
+  .items-table tbody tr {
+    display: block;
+    background: white;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    padding: 4px 0;
+  }
+
+  .items-table td {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    border-bottom: none;
+    font-size: 0.9rem;
+  }
+
+  /* data-label の値をラベルとして先頭に表示する */
+  .items-table td[data-label]:not([data-label=''])::before {
+    content: attr(data-label);
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    min-width: 80px;
+    flex-shrink: 0;
+  }
+
+  /* アクションボタン行は右寄せ */
+  .items-table td[data-label=''] {
+    justify-content: flex-end;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-top: 1px solid #f1f5f9;
+  }
 }

@@ -374,7 +374,7 @@ export default function BoxDetailPage() {
                   {editingItemId === item.id ? (
                     // インライン編集モード
                     <>
-                      <td>
+                      <td data-label="物品名">
                         <input
                           className="inline-input"
                           type="text"
@@ -382,7 +382,7 @@ export default function BoxDetailPage() {
                           onChange={e => setEditItemName(e.target.value)}
                         />
                       </td>
-                      <td>
+                      <td data-label="カテゴリ">
                         <select
                           className="inline-select"
                           value={editItemCategory}
@@ -393,7 +393,7 @@ export default function BoxDetailPage() {
                           ))}
                         </select>
                       </td>
-                      <td>
+                      <td data-label="作者・著者">
                         <input
                           className="inline-input"
                           type="text"
@@ -402,10 +402,10 @@ export default function BoxDetailPage() {
                           placeholder="作者・著者"
                         />
                       </td>
-                      <td style={{ fontSize: '0.82rem', color: '#94a3b8' }}>
+                      <td data-label="登録日" style={{ fontSize: '0.82rem', color: '#94a3b8' }}>
                         {new Date(item.created_at).toLocaleDateString('ja-JP')}
                       </td>
-                      <td>
+                      <td data-label="">
                         <div className="action-buttons">
                           <button
                             className="btn btn-primary btn-sm"
@@ -425,15 +425,15 @@ export default function BoxDetailPage() {
                   ) : (
                     // 通常表示モード
                     <>
-                      <td>{item.name}</td>
-                      <td><span className="badge">{item.category}</span></td>
-                      <td style={{ fontSize: '0.9rem', color: '#475569' }}>
+                      <td data-label="物品名">{item.name}</td>
+                      <td data-label="カテゴリ"><span className="badge">{item.category}</span></td>
+                      <td data-label="作者・著者" style={{ fontSize: '0.9rem', color: '#475569' }}>
                         {item.author ?? '—'}
                       </td>
-                      <td style={{ fontSize: '0.82rem', color: '#94a3b8' }}>
+                      <td data-label="登録日" style={{ fontSize: '0.82rem', color: '#94a3b8' }}>
                         {new Date(item.created_at).toLocaleDateString('ja-JP')}
                       </td>
-                      <td>
+                      <td data-label="">
                         <div className="action-buttons">
                           <button
                             className="btn btn-secondary btn-sm"
