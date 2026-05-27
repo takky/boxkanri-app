@@ -4,28 +4,74 @@
 
 **boxkanri-app** — レンタル倉庫に預けてある箱とその中身を管理するWebアプリ。
 
-- 箱単位で登録・検索・閲覧できる
-- 箱の中身（アイテム）をテキスト・写真で記録できる
-- どの倉庫・棚に置いてあるかをトラッキングできる
+### 主な機能
+- Supabase 認証（メール＋パスワード）
+- 管理場所ごとの箱一覧（カード形式）
+- 箱の登録・編集・削除（削除は物品0件のときのみ）
+- 物品（本/雑誌/資料/CD/DVD）の登録・編集・削除
+- 箱の登録日・更新日時の自動記録
 
-## 技術スタック（予定）
+## 技術スタック
 
-技術選定が決まり次第ここに追記する。現時点では未定。
+| 用途 | 技術 |
+|------|------|
+| フロントエンド | React 18 + Vite 6 |
+| ルーティング | React Router v6 |
+| バックエンド / 認証 / DB | Supabase |
+| スタイリング | バニラ CSS（`src/index.css`） |
 
 ## ディレクトリ構成
 
-構成が決まり次第ここに追記する。
+```
+boxkanri-app/
+├── index.html
+├── vite.config.js
+├── package.json
+├── .env                        # Supabase キー（.gitignore 対象）
+├── .gitignore
+├── supabase/
+│   └── schema.sql              # DB テーブル・RLS・トリガー定義
+└── src/
+    ├── main.jsx                # エントリーポイント
+    ├── App.jsx                 # ルート定義
+    ├── index.css               # グローバルスタイル
+    ├── supabase.js             # Supabase クライアント
+    ├── contexts/
+    │   └── AuthContext.jsx     # 認証コンテキスト
+    ├── components/
+    │   └── ProtectedRoute.jsx  # 未ログイン時リダイレクト
+    └── pages/
+        ├── LoginPage.jsx
+        ├── RegisterPage.jsx
+        ├── LocationsPage.jsx   # 管理場所一覧（トップ）
+        ├── LocationDetailPage.jsx
+        ├── NewBoxPage.jsx
+        └── BoxDetailPage.jsx
+```
 
 ## 開発コマンド
 
-コマンドが決まり次第ここに追記する。
+```bash
+npm install        # 依存パッケージをインストール
+npm run dev        # 開発サーバー起動（http://localhost:5173）
+npm run build      # 本番ビルド
+npm run preview    # ビルド結果をプレビュー
+```
+
+## Supabase セットアップ
+
+初回のみ、Supabase ダッシュボード → **SQL Editor** で `supabase/schema.sql` を実行する。
+
+- テーブル: `boxes`（箱）、`items`（物品）
+- Row Level Security（RLS）: 自分のデータのみ操作可能
+- トリガー: `boxes` の UPDATE 時に `updated_at` を自動更新
 
 ## Git 運用ルール
 
 ### ブランチ戦略
 
 - `main` — 本番相当の安定ブランチ。直接コミット禁止。
-- `feature/<topic>` — 機能追加・変更はここで作業し、PR経由で `main` にマージ。
+- `feature/<topic>` — 機能追加・変更はここで作業し、PR 経由で `main` にマージ。
 
 ### コード変更のたびに GitHub へプッシュする
 
@@ -37,12 +83,12 @@ git commit -m "わかりやすいコミットメッセージ"
 git push origin <現在のブランチ名>
 ```
 
-> **Claude Code への指示**: コードを編集・作成・削除した場合は、ユーザーに確認を求めることなく、変更後に自動で `git add → git commit → git push` を実行してよい。ただし `main` への直接プッシュは行わず、作業ブランチにプッシュすること。
+> **Claude Code への指示**: コードを編集・作成・削除した場合は、変更後に自動で `git add → git commit → git push` を実行すること。ただし `main` への直接プッシュは行わず、作業ブランチにプッシュすること。
 
 ### コミットメッセージ規約
 
 ```
-<種別>: <何をしたか（日本語 or 英語）>
+<種別>: <何をしたか（日本語）>
 
 例:
 feat: 箱登録フォームを追加
@@ -57,17 +103,15 @@ docs: CLAUDE.md にディレクトリ構成を追記
 | `fix` | バグ修正 |
 | `refactor` | 動作を変えないコード整理 |
 | `docs` | ドキュメントのみの変更 |
-| `test` | テストの追加・修正 |
 | `chore` | ビルド・設定などの雑務 |
 
 ### PR ルール
 
 - 1 PR = 1 つの目的に絞る
 - PR 本文には「何を・なぜ変えたか」を日本語で記載する
-- セルフレビュー後にマージ（レビュワーがいる場合は承認を得る）
 
 ## コーディング規約
 
-- コメントは原則書かない。書く場合は「なぜ」を一行で
+- コメントは日本語で記載する（「なぜ」を一行で）
 - 不要なエラーハンドリング・将来のための抽象化は入れない
 - セキュリティ上の問題（SQLインジェクション・XSS等）は即座に修正する

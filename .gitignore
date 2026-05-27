@@ -1,0 +1,18 @@
+# 依存パッケージ
+node_modules
+
+# ビルド成果物
+dist
+dist-ssr
+
+# 環境変数（Supabaseキーを含むため必ずコミット除外）
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+
+# エディタ
+.vscode
+.idea
