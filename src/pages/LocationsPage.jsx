@@ -38,6 +38,13 @@ export default function LocationsPage() {
     setLoading(false)
   }
 
+  // 箱が0件の管理場所を削除する
+  // location は DB の実体ではなく boxes.location から導出されるため、UI 状態から除去するだけでよい
+  function handleDeleteLocation(locationName) {
+    if (!window.confirm(`「${locationName}」を削除しますか？`)) return
+    setLocations(prev => prev.filter(loc => loc.name !== locationName))
+  }
+
   async function handleSignOut() {
     await signOut()
     navigate('/login')
@@ -73,15 +80,27 @@ export default function LocationsPage() {
           </p>
           <div className="card-grid">
             {locations.map(({ name, count }) => (
-              <Link
-                key={name}
-                to={`/location/${encodeURIComponent(name)}`}
-                className="card"
-              >
-                <p className="card-title">{name}</p>
-                <p className="card-count">{count}</p>
-                <p className="card-label">箱</p>
-              </Link>
+              <div key={name} className="card" style={{ cursor: 'default' }}>
+                {/* 場所名・箱数クリックで詳細へ */}
+                <Link
+                  to={`/location/${encodeURIComponent(name)}`}
+                  style={{ textDecoration: 'none', color: 'inherit', display: 'block', cursor: 'pointer' }}
+                >
+                  <p className="card-title">{name}</p>
+                  <p className="card-count">{count}</p>
+                  <p className="card-label">箱</p>
+                </Link>
+                {/* 箱が0件のときのみ削除ボタンを表示 */}
+                {count === 0 && (
+                  <button
+                    className="btn btn-danger btn-sm btn-full"
+                    style={{ marginTop: '14px' }}
+                    onClick={() => handleDeleteLocation(name)}
+                  >
+                    削除
+                  </button>
+                )}
+              </div>
             ))}
           </div>
         </>
