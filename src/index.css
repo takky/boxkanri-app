@@ -509,8 +509,60 @@ body {
   gap: 4px;
 }
 
+/* ============ 物品統計セクション ============ */
+.stats-section {
+  margin-top: 40px;
+}
+
+.stats-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0 0 14px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+
+.stats-card {
+  background: white;
+  border-radius: 10px;
+  padding: 16px 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  text-align: center;
+}
+
+.stats-category {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+  margin: 0 0 8px;
+}
+
+.stats-count {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #4f46e5;
+  margin: 0;
+  line-height: 1;
+}
+
+.stats-label {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  margin: 4px 0 0;
+}
+
 /* ============ レスポンシブ対応（モバイル） ============ */
 @media (max-width: 640px) {
+
+  /* 物品統計を2列にする */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
   /* ページヘッダーを縦積みにする */
   .page-header {

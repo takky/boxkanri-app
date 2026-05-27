@@ -3,38 +3,52 @@ import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase'
 import { useAuth } from '../contexts/AuthContext'
 
+const CATEGORIES = ['本', '雑誌', '資料', 'CD', 'DVD']
+
 export default function LocationsPage() {
   const [locations, setLocations] = useState([])
+  const [categoryStats, setCategoryStats] = useState({})
   const [loading, setLoading] = useState(true)
   const { signOut } = useAuth()
   const navigate = useNavigate()
 
   useEffect(() => {
-    fetchLocations()
+    fetchAll()
   }, [])
 
-  async function fetchLocations() {
-    // 全箱を取得して、管理場所ごとの箱数をクライアント側で集計する
-    const { data, error } = await supabase
-      .from('boxes')
-      .select('location')
+  async function fetchAll() {
+    // 管理場所集計と物品カテゴリ集計を並列取得する
+    const [boxesRes, itemsRes] = await Promise.all([
+      supabase.from('boxes').select('location'),
+      supabase.from('items').select('category'),
+    ])
 
-    if (error) {
-      console.error(error)
+    if (boxesRes.error) {
+      console.error(boxesRes.error)
       setLoading(false)
       return
     }
 
+    // 管理場所ごとの箱数を集計する
     const countMap = {}
-    data.forEach(({ location }) => {
+    boxesRes.data.forEach(({ location }) => {
       countMap[location] = (countMap[location] || 0) + 1
     })
-
     const sorted = Object.entries(countMap)
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => a.name.localeCompare(b.name, 'ja'))
-
     setLocations(sorted)
+
+    // カテゴリごとの物品数を集計する
+    if (!itemsRes.error) {
+      const stats = {}
+      CATEGORIES.forEach(c => { stats[c] = 0 })
+      itemsRes.data.forEach(({ category }) => {
+        if (stats[category] !== undefined) stats[category]++
+      })
+      setCategoryStats(stats)
+    }
+
     setLoading(false)
   }
 
@@ -102,6 +116,20 @@ export default function LocationsPage() {
                 )}
               </div>
             ))}
+          </div>
+
+          {/* 物品統計セクション */}
+          <div className="stats-section">
+            <h2 className="stats-title">物品統計</h2>
+            <div className="stats-grid">
+              {CATEGORIES.map(category => (
+                <div key={category} className="stats-card">
+                  <p className="stats-category">{category}</p>
+                  <p className="stats-count">{categoryStats[category] ?? 0}</p>
+                  <p className="stats-label">件</p>
+                </div>
+              ))}
+            </div>
           </div>
         </>
       )}
