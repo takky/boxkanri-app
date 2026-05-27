@@ -33,6 +33,7 @@ export default function BoxDetailPage() {
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [touchingUpdatedAt, setTouchingUpdatedAt] = useState(false)
 
   useEffect(() => {
     fetchBox()
@@ -101,6 +102,24 @@ export default function BoxDetailPage() {
     }
   }
 
+  // boxes.updated_at を現在日時で更新し、ローカル状態に反映する
+  async function touchBoxUpdatedAt() {
+    const { data, error } = await supabase
+      .from('boxes')
+      .update({ updated_at: new Date().toISOString() }) // トリガーが now() で上書きする
+      .eq('id', id)
+      .select('updated_at')
+      .single()
+    if (!error) setBox(prev => ({ ...prev, updated_at: data.updated_at }))
+  }
+
+  // 更新日時を手動で今の日時に更新する
+  async function handleTouchUpdatedAt() {
+    setTouchingUpdatedAt(true)
+    await touchBoxUpdatedAt()
+    setTouchingUpdatedAt(false)
+  }
+
   // 物品を追加
   async function handleAddItem(e) {
     e.preventDefault()
@@ -126,6 +145,8 @@ export default function BoxDetailPage() {
       setNewItemCategory(CATEGORIES[0])
       setNewItemAuthor('')
       setShowAddForm(false)
+      // 物品追加時に箱の更新日時を更新する
+      await touchBoxUpdatedAt()
     }
     setAddingItem(false)
   }
@@ -172,6 +193,8 @@ export default function BoxDetailPage() {
       setError(error.message)
     } else {
       setItems(prev => prev.filter(i => i.id !== itemId))
+      // 物品削除時に箱の更新日時を更新する
+      await touchBoxUpdatedAt()
     }
   }
 
@@ -262,10 +285,15 @@ export default function BoxDetailPage() {
 
         <div className="detail-dates">
           <span>登録日: {formatDateTime(box.created_at)}</span>
-          {/* updated_at は UPDATE トリガーで自動更新される */}
-          {box.updated_at !== box.created_at && (
-            <span>更新日時: {formatDateTime(box.updated_at)}</span>
-          )}
+          <span>更新日時: {formatDateTime(box.updated_at)}</span>
+          <button
+            className="btn btn-secondary btn-sm"
+            onClick={handleTouchUpdatedAt}
+            disabled={touchingUpdatedAt}
+            style={{ marginLeft: 'auto' }}
+          >
+            {touchingUpdatedAt ? '更新中...' : '更新日時を手動更新'}
+          </button>
         </div>
       </div>
 
