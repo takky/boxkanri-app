@@ -49,6 +49,16 @@ boxkanri-app/
         └── BoxDetailPage.jsx
 ```
 
+## デプロイ情報
+
+| 項目 | 内容 |
+|------|------|
+| 本番URL | https://boxkanri-app.vercel.app/ |
+| ホスティング | Vercel |
+| Supabaseプロジェクト名 | boxkanri-app |
+
+環境変数（`VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`）は Vercel ダッシュボードの **Settings → Environment Variables** で管理する。
+
 ## 開発コマンド
 
 ```bash
