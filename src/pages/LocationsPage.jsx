@@ -55,7 +55,7 @@ export default function LocationsPage() {
   return (
     <div className="container">
       <div className="page-header">
-        <h1>ボックス管理</h1>
+        <h1>ボックス管理システム</h1>
         <div className="header-actions">
           <Link to="/boxes/new" className="btn btn-primary btn-sm">
             + 新しい箱を登録
