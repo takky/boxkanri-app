@@ -560,6 +560,11 @@ body {
 /* ============ レスポンシブ対応（モバイル） ============ */
 @media (max-width: 640px) {
 
+  /* ログイン画面以外のコンテナに上下5px・左右3pxの余白を設ける */
+  .container {
+    padding: 5px 3px;
+  }
+
   /* 物品統計を2列にする */
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
